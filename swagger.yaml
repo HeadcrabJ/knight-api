@@ -336,4 +336,16 @@ definitions:
         type: string
         items:
           $ref: "#/definitions/Title"
+  Post:
+    type: object
+    properties:
+      id:
+        type: number
+      date:
+        type: number
+      author:
+        type: number
+      content:
+        type: string
+        default: Text 123
   
