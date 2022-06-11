@@ -1,21 +1,23 @@
-swagger: "2.0"
+openapi: 3.0.0
 info:
+  title: Knight Social Network
   description: Social network Knight API documentation
   version: 1.0.0
-  title: Swagger Knight API
+  contact:
+    name: Telegram and Discord to contact with me
+    url: https://headcrabj.github.io/
   license:
     name: GNU AGPLv3
     url: https://www.gnu.org/licenses/agpl-3.0.en.html
-host: localhost
+servers:
+  - url: http://localhost/
 tags:
 - name: users
-  description: Routes for managing your account
+  description: Routes for viewing and managing your account
 - name: posts
-  description: Routes for managing your posts
+  description: Routes for viewing and managing your posts
 - name: mod
   description: Routes for moderators and admins
-schemes:
-- https
 paths:
   /users/get:
     get:
@@ -26,8 +28,10 @@ paths:
       responses:
         200:
           description: OK
-          schema:
-            $ref: '#/definitions/User'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /users/get/{id}:
     get:
       tags:
@@ -39,12 +43,15 @@ paths:
         in: path
         description: User ID
         required: true
-        type: integer
+        schema:
+          type: number
       responses:
         200:
           description: OK
-          schema:
-            $ref: '#/definitions/User'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         400:
           description: Bad Request
         404:
@@ -60,12 +67,15 @@ paths:
         in: header
         description: Discord Access Token
         required: true
-        type: string
+        schema:
+          type: string
       responses:
         200:
           description: OK
-          schema:
-            $ref: '#/definitions/User'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         400:
           description: Bad Request
         404:
@@ -76,18 +86,18 @@ paths:
       - users
       summary: Update current user
       description: Change data in database of current user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
       parameters:
       - name: Authorization
         in: header
         description: Discord Access Token
         required: true
-        type: string
-      - name: body
-        in: body
-        description: User object
-        required: true
         schema:
-          $ref: "#/definitions/User"
+          type: string
       responses:
         400:
           description: Bad Request
@@ -105,7 +115,8 @@ paths:
       - name: Authorization
         in: header
         required: true
-        type: string
+        schema:
+          type: string
       responses:
         400:
           description: Bad Request
@@ -122,8 +133,10 @@ paths:
       responses:
         200:
           description: OK
-          schema:
-            $ref: '#/definitions/Post'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
   /posts/get/{id}:
     get:
       tags:
@@ -135,12 +148,15 @@ paths:
         in: path
         description: User ID
         required: true
-        type: integer
+        schema:
+          type: integer
       responses:
         200:
           description: OK
-          schema:
-            $ref: '#/definitions/Post'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
         400:
           description: Bad Request
         404:
@@ -151,14 +167,12 @@ paths:
       - posts
       summary: Create post
       description: Create post with content from body
-      parameters:
-      - name: body
-        in: body
-        description: Post content
-        required: true
-        schema:
-          type: string
-          default: Example 12345
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+              example: Example 1234
       responses:
         400:
           description: String length must be more than 8
@@ -175,12 +189,14 @@ paths:
         in: header
         description: Disord Access Token
         required: true
-        type: string
+        schema:
+          type: string
       - name: id
         in: path
         description: User ID
         required: true
-        type: integer
+        schema:
+          type: integer
       responses:
         400:
           description: Bad Request
@@ -199,17 +215,20 @@ paths:
         in: header
         description: Discord Access Token
         required: true
-        type: string
+        schema:
+          type: string
       - name: user
         in: path
         description: User ID
         required: true
-        type: integer
+        schema:
+          type: number
       - name: title
         in: path
         description: User Title
         required: true
-        type: string
+        schema:
+          type: string
       responses:
         204:
           description: No content
@@ -230,12 +249,14 @@ paths:
         in: header
         description: Discord Access Token
         required: true
-        type: string
+        schema:
+          type: string
       - name: user
         in: path
         description: User ID
         required: true
-        type: integer
+        schema:
+          type: number
       responses:
         400:
           description: Bad Request
@@ -254,12 +275,14 @@ paths:
         in: header
         description: Discord Access Token
         required: true
-        type: string
+        schema:
+          type: string
       - name: user
         in: path
         description: User ID
         required: true
-        type: integer
+        schema:
+          type: number
       responses:
         400:
           description: Bad Request
@@ -267,85 +290,108 @@ paths:
           description: Unauthorized
         404:
           description: User not found
-        
-definitions:
-  Title:
-    type: string
-    enum:
-    - GM
-    - IM
-    - FM
-    - CM
-    - WGM
-    - WIM
-    - WFM
-    - NM
-  Sex:
-    type: string
-    enum:
-    - MALE
-    - FEMALE
-  Role:
-    type: string
-    enum:
-    - USER
-    - MOD
-    - ADMIN
-  Federation:
-    type: string
-    enum:
-    - FIDE
-    - NATIONAL
-  User:
-    type: object
-    properties:
-      id:
-        type: number
-      name:
-        type: string
-      bio:
-        type: string
-      chessLink:
-        type: string
-        default: https://chess24.com/en/profile/chesshedge
-      country:
-        type: string
-        enum:
-        - UA
-        - UK
-        - US
-      email:
-        type: string
-        default: example@example.com
-      federation:
-        type: string
-        items:
-          $ref: "#/definitions/Federation"
-      rating:
-        type: integer
-        default: 1224
-      role:
-        type: string
-        items:
-          $ref: "#/definitions/Role"
-      sex:
-        type: string
-        items:
-          $ref: "#/definitions/Sex"
-      title:
-        type: string
-        items:
-          $ref: "#/definitions/Title"
-  Post:
-    type: object
-    properties:
-      id:
-        type: number
-      date:
-        type: number
-      author:
-        type: number
-      content:
-        type: string
-        default: Text 123
-  
+
+components:
+  schemas:
+    Title:
+      type: string
+      enum:
+      - GM
+      - IM
+      - FM
+      - CM
+      - WGM
+      - WIM
+      - WFM
+      - NM
+    Sex:
+      type: string
+      enum:
+      - MALE
+      - FEMALE
+    Role:
+      type: string
+      enum:
+      - USER
+      - MOD
+      - ADMIN
+    Federation:
+      type: string
+      enum:
+      - FIDE
+      - NATIONAL
+    Country:
+      type: string
+      enum:
+      - UK
+      - US
+      - UA
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          default: "ID from Discord"
+          example: 638485831796432456
+        name:
+          type: string
+          default: "Nickname from Discord"
+          example: Krabi
+        bio:
+          type: string
+          example: My beautiful bio
+        chessLink:
+          type: string
+          example: https://chess24.com/en/profile/chesshedge
+        country:
+          type: string
+          example: UA
+          items:
+            $ref: "#/components/schemas/Country"
+        email:
+          type: string
+          example: example@example.com
+        federation:
+          type: string
+          example: "FIDE"
+          items:
+            $ref: "#/components/schemas/Federation"
+        rating:
+          type: integer
+          default: 0
+          example: 32
+        role:
+          type: string
+          example: USER
+          default: USER
+          items:
+            $ref: "#/components/schemas/Role"
+        sex:
+          type: string
+          example: MALE
+          items:
+            $ref: "#/components/schemas/Sex"
+        title:
+          type: string
+          example: FM
+          items:
+            $ref: "#/components/schemas/Title"
+    Post:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 56
+        date:
+          type: number
+          example: 1654944238
+        author:
+          type: number
+          example: 638485831796432456
+        content:
+          type: string
+          example: Best post
+
+externalDocs:
+  description: GitHub
+  url: https://github.com/u032/knight
