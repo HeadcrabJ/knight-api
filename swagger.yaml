@@ -17,7 +17,7 @@ tags:
 - name: posts
   description: Routes for viewing and managing your posts
 - name: mod
-  description: Routes for moderators and admins
+  description: Routes for moderators and admins. Updating title and deleting users
 paths:
   /users/get:
     get:
@@ -31,7 +31,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
   /users/get/{id}:
     get:
       tags:
@@ -41,7 +43,7 @@ paths:
       parameters:
       - name: id
         in: path
-        description: User ID
+        description: Discord user ID
         required: true
         schema:
           type: number
@@ -61,14 +63,11 @@ paths:
       tags:
       - users
       summary: Get current user
-      description: Get user by token
+      description: Get current user by Discord token
+      security:
+      - ApiKeyAuth: []
       parameters:
-      - name: Authorization
-        in: header
-        description: Discord Access Token
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/Auth"
       responses:
         200:
           description: OK
@@ -91,13 +90,10 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/User"
+      security:
+      - ApiKeyAuth: []
       parameters:
-      - name: Authorization
-        in: header
-        description: Discord Access Token
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/Auth"
       responses:
         400:
           description: Bad Request
@@ -110,13 +106,11 @@ paths:
       tags:
       - users
       summary: Delete current user
-      description: Delete current user by token from database
+      description: Delete current user from database by Discord token
+      security:
+      - ApiKeyAuth: []
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/Auth"
       responses:
         400:
           description: Bad Request
@@ -136,7 +130,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
   /posts/get/{id}:
     get:
       tags:
@@ -172,7 +168,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/User"
-              example: Example 1234
       responses:
         400:
           description: String length must be more than 8
@@ -184,13 +179,10 @@ paths:
       - posts
       summary: Delete post
       description: Delete post by id
+      security:
+      - ApiKeyAuth: []
       parameters:
-      - name: Authorization
-        in: header
-        description: Disord Access Token
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/Auth"
       - name: id
         in: path
         description: User ID
@@ -210,13 +202,10 @@ paths:
       - mod
       summary: Update title
       description: Update user title
+      security:
+      - ApiKeyAuth: []
       parameters:
-      - name: Authoriozation
-        in: header
-        description: Discord Access Token
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/Auth"
       - name: user
         in: path
         description: User ID
@@ -244,13 +233,10 @@ paths:
       - mod
       summary: Clear title
       description: Clear title of user by id
+      security:
+      - ApiKeyAuth: []
       parameters:
-      - name: Authorization
-        in: header
-        description: Discord Access Token
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/Auth"
       - name: user
         in: path
         description: User ID
@@ -269,17 +255,14 @@ paths:
       tags:
       - mod
       summary: Delete user
-      description: Delete user by id
+      description: Delete user from database by id
+      security:
+      - ApiKeyAuth: []
       parameters:
-      - name: Authorization
-        in: header
-        description: Discord Access Token
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/Auth"
       - name: user
         in: path
-        description: User ID
+        description: Discord user ID
         required: true
         schema:
           type: number
@@ -292,6 +275,19 @@ paths:
           description: User not found
 
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  parameters:
+    Auth:
+      name: Authorization
+      in: header
+      description: Discord Access Token
+      required: true
+      schema:
+        type: string
   schemas:
     Title:
       type: string
@@ -350,7 +346,7 @@ components:
             $ref: "#/components/schemas/Country"
         email:
           type: string
-          example: example@example.com
+          example: https://headcrabj.github.io/
         federation:
           type: string
           example: "FIDE"
