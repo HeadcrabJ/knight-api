@@ -12,13 +12,67 @@ info:
 servers:
   - url: https://dev.api.knight.chesscord.wiki/
 tags:
+- name: auth
+  description: User authorization and token refreshing
 - name: users
-  description: Routes for viewing and managing your account
+  description: Getting information about users and profile updating
 - name: posts
-  description: Routes for viewing and managing your posts
+  description: Getting posts and post editing
 - name: mod
-  description: Routes for moderators and admins. Updating title and deleting users
+  description: Management of posts and users for moderators
 paths:
+  /auth/authorize:
+    post:
+      tags:
+      - auth
+      summary: Get token by code
+      description: Authorize user and create entry in database
+      parameters:
+      - name: code
+        in: query
+        description: Authorization code
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        400:
+          description: Invalid code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscordError'
+  /auth/refresh:
+    post:
+      tags:
+      - auth
+      summary: Refresh token
+      description: Renew token before token expires
+      parameters:
+      - name: token
+        in: query
+        description: Refresh token
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        400:
+          description: Invalid grant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscordError'
   /users/get:
     get:
       tags:
@@ -322,16 +376,39 @@ components:
       - UK
       - US
       - UA
+    DiscordError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: invalid_request
+        error_description:
+          type: string
+          example: Invalid "code" in request.
+    AccessToken:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: iJZCtGrZsmspnIFPQRsiBg1ad56cbU
+        token_type:
+          type: string
+          default: Bearer
+        expires_in:
+          type: integer
+          example: 604800
+        refresh_token:
+          type: string
+          example: YzCJfmXgLtHOyl9nu2VmaeX7jyFKvP
+        scope:
+          type: string
+          default: identify
     User:
       type: object
       properties:
-        id:
-          type: number
-          default: "ID from Discord"
-          example: 638485831796432456
         name:
           type: string
-          default: "Nickname from Discord"
+          default: Nickname from Discord
           example: Krabi
         bio:
           type: string
@@ -349,7 +426,7 @@ components:
           example: https://headcrabj.github.io/
         federation:
           type: string
-          example: "FIDE"
+          example: FIDE
           items:
             $ref: "#/components/schemas/Federation"
         rating:
