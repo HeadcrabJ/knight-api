@@ -4,7 +4,7 @@ info:
   description: Social network Knight API documentation
   version: 1.0.0
   contact:
-    name: Telegram and Discord to contact with me
+    name: Discord to contact with me
     url: https://headcrabj.github.io/
   license:
     name: GNU AGPLv3
@@ -69,6 +69,26 @@ paths:
                 $ref: '#/components/schemas/AccessToken'
         400:
           description: Invalid grant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscordError'
+  /auth/revoke:
+    post:
+      tags:
+      - auth
+      summary: Revoke token
+      description: Revoke token
+      parameters:
+      - name: token
+        in: query
+        description: Revoke token
+        required: true
+        schema:
+          type: string
+      responses:
+        400:
+          description: Invalid token
           content:
             application/json:
               schema:
@@ -494,9 +514,6 @@ components:
     Post:
       type: object
       properties:
-        id:
-          type: number
-          example: 56
         date:
           type: number
           example: 1654944238
